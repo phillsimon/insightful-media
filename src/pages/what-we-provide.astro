@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { page, ed } from '../lib/content';
+const { data, file } = page('what-we-provide');
+---
+<Layout title={data.title}>
+  <div class="provide-grid">
+    <div>
+      <h2 class="page-title" {...ed(file, 'heading')}>{data.heading}</h2>
+      <div class="rich" {...ed(file, 'introHtml', 'html')} set:html={data.introHtml} />
+      {data.services.map((s: any, i: number) => (
+        <>
+          <h3 style="margin-top:30px" {...ed(file, `services.${i}.title`)}>{s.title}</h3>
+          <div class="rich" {...ed(file, `services.${i}.bodyHtml`, 'html')} set:html={s.bodyHtml} />
+        </>
+      ))}
+    </div>
+    <div class="rich" style="padding-top:60px" {...ed(file, 'listHtml', 'html')} set:html={data.listHtml} />
+  </div>
+</Layout>

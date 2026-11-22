@@ -1,0 +1,74 @@
+---
+import '@fontsource/roboto/400-italic.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto-slab/700.css';
+import '../styles/global.css';
+import { settings, nav, ed } from '../lib/content';
+import { getCollection } from 'astro:content';
+
+interface Props { title?: string; description?: string; dark?: boolean; image?: string; }
+const { title, description, dark = false, image } = Astro.props;
+const pageTitle = title ? `${title} - Insightful.Media` : 'Insightful.Media';
+const desc = description || settings.metaDescription;
+const path = Astro.url.pathname;
+const hasPosts = (await getCollection('posts', (e) => e.data.published)).length > 0;
+const items = hasPosts ? [...nav, { href: '/blog/', label: 'Blog' }] : nav;
+const S = 'src/content/settings.json';
+const canonical = new URL(path, Astro.site).href;
+const ogImage = new URL(image || settings.logo.src, Astro.site).href;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{pageTitle}</title>
+  <meta name="description" content={desc} />
+  <link rel="canonical" href={canonical} />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={desc} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href={settings.logo.src} />
+  <link rel="preload" href="/fonts/Afacad-VariableFont_wght.woff2" as="font" type="font/woff2" crossorigin />
+  {hasPosts && <link rel="alternate" type="application/rss+xml" title="Insightful Media blog" href="/blog/rss.xml" />}
+  <script is:inline>
+    try { if (localStorage.getItem('im-edit') === '1') {
+      var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/admin/editor.css'; document.head.appendChild(l);
+      var s = document.createElement('script'); s.src = '/admin/editor.js'; s.defer = true; document.head.appendChild(s);
+    } } catch (e) {}
+  </script>
+</head>
+<body class:list={{ dark }}>
+  <a class="skip" href="#content">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="/">
+      <img src={settings.logo.src} alt={settings.logo.alt} width="142" height="123" {...ed(S, 'logo', 'image')} />
+      <p class="brand-name"><span class="long" {...ed(S, 'siteName')}>{settings.siteName}</span><span class="short">{settings.shortName}</span></p>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">&#9776;</button>
+    <nav class="site-nav" id="site-nav" aria-label="Main">
+      <ul>
+        {items.map((i) => <li><a href={i.href} aria-current={path.startsWith(i.href) ? 'page' : undefined}>{i.label}</a></li>)}
+      </ul>
+      <a class="cta" href={settings.ctaHref} {...ed(S, 'ctaLabel')}>{settings.ctaLabel}</a>
+    </nav>
+  </header>
+  <main class="site-main" id="content">
+    <slot />
+  </main>
+  <footer class="site-footer">
+    <p>&copy; {new Date().getFullYear()}, <span {...ed(S, 'footerText')}>{settings.footerText}</span> &middot; <a href="/privacy-policy/" style="color:inherit">Privacy</a></p>
+  </footer>
+  <script>
+    const btn = document.querySelector<HTMLButtonElement>('.nav-toggle');
+    const navEl = document.getElementById('site-nav');
+    btn?.addEventListener('click', () => {
+      const open = navEl!.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  </script>
+</body>
+</html>

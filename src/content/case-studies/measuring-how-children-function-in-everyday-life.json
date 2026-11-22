@@ -1,0 +1,26 @@
+{
+  "title": "Measuring How Children Function in Everyday Life",
+  "category": "video",
+  "order": 3,
+  "published": true,
+  "image": null,
+  "video": {
+    "provider": "youtube",
+    "id": "cq8iZcxOmrw"
+  },
+  "details": [
+    {
+      "label": "Role",
+      "value": "Co-producer, director, cinematographer, editor."
+    },
+    {
+      "label": "Client",
+      "value": "Dr. Morris Bell from Yale University."
+    },
+    {
+      "label": "Principal investigators",
+      "value": "Dr. Morris Bell, Dr. Fillia Makedon and Dr. Vassilis Athitsos from the University of Texas at Arlington (UTA)."
+    }
+  ],
+  "bodyHtml": "<p>The client wanted a short video that described his research using embodied cognition to test everyday functions in children.</p>"
+}

@@ -1,0 +1,22 @@
+{
+  "title": "William Casper Graustein Memorial Fund",
+  "category": "web",
+  "order": 3,
+  "published": true,
+  "image": {
+    "src": "/media/screenshot-2024-10-24-at-10.55.53-am.webp",
+    "alt": "Image of WCGMF website"
+  },
+  "video": null,
+  "details": [
+    {
+      "label": "Agency",
+      "value": "The Narrative Project"
+    },
+    {
+      "label": "Role",
+      "value": "Website concept, site builder, project manager."
+    }
+  ],
+  "bodyHtml": "<p>I developed this WordPress site using a custom theme and Elementor page builder.</p>"
+}

@@ -1,0 +1,16 @@
+{
+  "title": "How we work",
+  "heading": "How we work with you",
+  "subheading": "Web and App development",
+  "bodyHtml": "<p>As a web/app designers and UX specialists, our process is grounded in both collaboration and design thinking, ensuring a holistic and user-centric approach to your project. Depending on the size and complexity of the project, most projects can be completed in days, and sometimes take months.</p><p><strong>Discovery<br></strong>To kick things off, we'll initiate a discovery phase, understanding your message, target audience, and specific project goals. Your insights will shape the foundation of the project.</p><p><strong>Design Thinking<br></strong>Using design thinking methodology, I immerse myself in understanding your brand and the needs of your audience. This empathetic understanding guides the ideation phase, where we'll generate a diverse range of concepts to address challenges.</p><p><strong>Prototyping</strong><br>Prototyping follows suit, allowing us to quickly translate ideas into tangible representations. This iterative process, aligned with the design thinking principle of \"fail fast, learn quickly,\" welcomes your valuable feedback, refining and enhancing our concepts.</p><p><strong>Visual Design<br></strong>Moving on to the visual aesthetics, I'll create designs with a focus on user interface elements, colors, and imagery that not only align with your brand identity but also contribute to an intuitive and seamless user experience.</p><p><strong>Site Build<br></strong>After finalizing the visual design and prototype, we transition into the site/app build phase, where ideas become reality. During this stage, I'll bring together program building expertise, responsive design principles, to construct a website/app that’s functional, scalable, and optimized for performance across devices. The goal is to prioritize clean, efficient code and ensure seamless integration with essential tools and platforms. <strong><br></strong></p><p><strong>Feedback and Analytics<br></strong>Committed to continuous improvement, we will monitor user feedback and analytics post-launch. This approach ensures that your digital presence evolves to meet the changing needs of your organization and audience.</p>",
+  "images": [
+    {
+      "src": "/media/4.webp",
+      "alt": ""
+    },
+    {
+      "src": "/media/2.webp",
+      "alt": ""
+    }
+  ]
+}

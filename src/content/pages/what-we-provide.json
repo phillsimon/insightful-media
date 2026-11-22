@@ -1,0 +1,20 @@
+{
+  "title": "What we provide",
+  "heading": "What we provide",
+  "introHtml": "<p>Insightful Media owner Phillip Simon, and the hand picked professionals he works with, bring decades of experience working successfully for clients in both the public and private sectors.</p>",
+  "services": [
+    {
+      "title": "UX Design and content strategy",
+      "bodyHtml": "<p>Phillip Simon possesses a broad skill set in user experience (UX) design, covering user research, prototyping, intuitive navigation, designing interactive elements, and ensuring visual designs are functional. He collaborates effectively with cross-functional teams and prioritizes continuous learning to stay updated with industry trends.</p>"
+    },
+    {
+      "title": "Web and app development",
+      "bodyHtml": "<p>Phill is a versatile web producer skilled in various tasks, seamlessly integrating project goals, requirements, and scope into digital endeavors. With expertise in project management, he manages projects from inception to execution efficiently. His capabilities extend to developing training platforms, crafting research apps, and curating engaging content. Phill meticulously constructs graphic sitemaps, wireframes, and information architecture, ensuring intuitive user experiences through user-centric design principles.</p>"
+    },
+    {
+      "title": "Web based course development",
+      "bodyHtml": "<p>Phillip Simon is a dynamic training professional known for expertise in various training activities, including visual design, digital publishing, content strategy, and web management. He guides individuals through complex concepts, utilizing interactive programs and graphics software effectively. Phillip crafts engaging training materials and employs multimedia tools to deliver impactful learning experiences, dedicated to empowering learners and enhancing their skills.</p>"
+    }
+  ],
+  "listHtml": "<p><strong>UX Design and Content Strategy</strong></p><ul><li>User research and analysis</li><li>Prototyping and intuitive navigation design</li><li>Designing interactive elements</li><li>Functional but visually appealing designs</li><li>Collaboration with cross-functional teams</li><li>Staying updated with industry trends</li></ul><p><strong>Web and App Development</strong></p><ul><li>Seamless integration of project goals, requirements, and scope</li><li>End-to-end project management from inception to execution</li><li>Development of training platforms and research apps</li><li>Construction of graphic sitemaps, wireframes, and information architecture</li><li>User-centric design for intuitive digital experiences</li></ul><p><strong>WordPress Technical Support &amp; Development</strong></p><ul><li><strong>WordPress Installation &amp; Hosting Setup</strong><br>Configuration of servers, domain setup, SSL installation, and WordPress deployment</li><li><strong>Theme Customization &amp; Development</strong><br>Modify existing themes or develop a custom one to match your brand and user needs.</li><li><strong>Plugin Vetting, Installation &amp; Configuration</strong><br>Evaluation and installation of plugins that enhance functionality without compromising site performance or security.</li><li><strong>Site Analysis &amp; Performance Optimization</strong><br>Through detailed site audits, identify and fix performance bottlenecks—optimizing load speed, caching, image handling, and database efficiency.</li><li><strong>Security &amp; Ongoing Maintenance</strong><br>Implement best practices for WordPress security, including firewalls, backup systems, regular updates, and role-based access controls.</li></ul><p><strong>Web-Based Course Development</strong></p><ul><li>Development of interactive training programs.</li><li>Crafting engaging training materials using multimedia tools.</li><li>Delivering impactful learning experiences.</li><li>Guiding individuals through complex concepts and enhancing skills.</li></ul>"
+}

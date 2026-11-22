@@ -1,0 +1,27 @@
+{
+  // Cloudflare Worker for insightful.media (Astro).
+  "name": "insightful-media",
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "vars": {
+    // GitHub repo the editor commits to (owner/name) and branch.
+    "GITHUB_REPO": "phillsimon/insightful-media",
+    "GITHUB_BRANCH": "main",
+    // Cloudflare Access: your team domain and the Application Audience (AUD) tag.
+    "ACCESS_TEAM_DOMAIN": "CHANGE-ME.cloudflareaccess.com",
+    "ACCESS_AUD": "CHANGE-ME",
+    // Allowed editor emails (comma separated).
+    "EDITOR_EMAILS": "phillip@insightful.media",
+    // Contact form
+    "CONTACT_TO": "phillip@insightful.media",
+    "CONTACT_FROM": "Insightful Media website <website@send.insightful.media>",
+    "CF_ACCOUNT_ID": "CHANGE-ME"
+  }
+  // Secrets (set with `npx wrangler secret put NAME`, never put here):
+  //   GITHUB_TOKEN       fine-grained token, Contents: read/write on the repo
+  //   CF_STREAM_TOKEN    API token with Stream: Edit
+  //   TURNSTILE_SECRET   Turnstile secret key
+  //   RESEND_API_KEY     for sending contact form email
+}

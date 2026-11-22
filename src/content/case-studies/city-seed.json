@@ -1,0 +1,22 @@
+{
+  "title": "City Seed",
+  "category": "web",
+  "order": 5,
+  "published": true,
+  "image": {
+    "src": "/media/screenshot-2024-01-13-at-5.12.36-pm.webp",
+    "alt": "Screen from CitySeed web site"
+  },
+  "video": null,
+  "details": [
+    {
+      "label": "Agency",
+      "value": "The Narrative Project"
+    },
+    {
+      "label": "Role",
+      "value": "Website concept, UI designer, site builder, project manager."
+    }
+  ],
+  "bodyHtml": "<p>I developed this WordPress site using a custom theme and Elementor page builder.</p>"
+}

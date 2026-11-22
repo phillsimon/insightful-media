@@ -1,0 +1,26 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { page, ed, posts } from '../../lib/content';
+const { data, file } = page('blog');
+const list = await posts();
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+---
+<Layout title={data.title}>
+  <h2 class="page-title" {...ed(file, 'heading')}>{data.heading}</h2>
+  {data.introHtml && <div class="rich prose" style="margin-bottom:30px" {...ed(file, 'introHtml', 'html')} set:html={data.introHtml} />}
+  <ul class="post-list" data-collection="post">
+    {list.map((p) => (
+      <li data-item={`src/content/posts/${p.id}.json`} data-item-type="post">
+        <a href={`/blog/${p.id}/`} class:list={[p.data.hero?.src && 'post-card']}>
+          {p.data.hero?.src && <img src={p.data.hero.src} alt={p.data.hero.alt} loading="lazy" />}
+          <div>
+            <h2>{p.data.title}</h2>
+            <p class="post-meta">{fmt(p.data.date)}</p>
+            {p.data.excerpt && <p>{p.data.excerpt}</p>}
+          </div>
+        </a>
+      </li>
+    ))}
+  </ul>
+  {list.length === 0 && <p>No posts yet.</p>}
+</Layout>

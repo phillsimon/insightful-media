@@ -1,0 +1,22 @@
+{
+  "title": "Virtual Conference Website",
+  "category": "web",
+  "order": 7,
+  "published": true,
+  "image": {
+    "src": "/media/rise-1.webp",
+    "alt": "Screenshot of the Virtual Conference Website website"
+  },
+  "video": null,
+  "details": [
+    {
+      "label": "Client",
+      "value": "Harvest Development Group"
+    },
+    {
+      "label": "Role",
+      "value": "Design and development"
+    }
+  ],
+  "bodyHtml": "<p>I designed and developed this WordPress site using a custom template and multiple plugins to enroll and restrict pages that attendees can see.</p>"
+}

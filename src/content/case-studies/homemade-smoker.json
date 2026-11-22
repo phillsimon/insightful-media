@@ -1,0 +1,13 @@
+{
+  "title": "Homemade Smoker",
+  "category": "video",
+  "order": 6,
+  "published": true,
+  "image": null,
+  "video": {
+    "provider": "youtube",
+    "id": "AQMFZ8rHD04"
+  },
+  "details": [],
+  "bodyHtml": "<p>Shot and edited using a smart phone, I made this fun video while on vacation. I demonstrate how to make a homemade smoker and cook ten pounds of barbecue chicken. The video was made in an attempt to see if a high quality video can be filmed and edited entirely on an Android smartphone.</p>"
+}

@@ -1,0 +1,26 @@
+{
+  "title": "Veterans Benefit Education",
+  "category": "web",
+  "order": 6,
+  "published": true,
+  "image": {
+    "src": "/media/screen-shot-2017-04-21-at-4.45.53-pm-1024x881.webp",
+    "alt": "Screenshot of the Veterans Benefit Education website"
+  },
+  "video": null,
+  "details": [
+    {
+      "label": "Client",
+      "value": "U.S. Veteran’s Administration Health Care System"
+    },
+    {
+      "label": "Primary investigator",
+      "value": "Marc Rosen, M.D."
+    },
+    {
+      "label": "Role",
+      "value": "Application designer, UI designer, and project manager."
+    }
+  ],
+  "bodyHtml": "<p>I collaborated to create a Web-based interview program so veteran participants can learn about their disability benefits. The virtual model for the multi-year study is based on in-person motivational interview techniques.</p><p>The application was built using Ruby on Rails.</p>"
+}

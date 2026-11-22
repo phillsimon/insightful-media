@@ -1,0 +1,22 @@
+{
+  "title": "Southington Community Cultural Arts",
+  "category": "web",
+  "order": 1,
+  "published": true,
+  "image": {
+    "src": "/media/screenshot-2025-05-16-at-5.57.13-pm.webp",
+    "alt": "Screenshot of the Southington Community Cultural Arts website"
+  },
+  "video": null,
+  "details": [
+    {
+      "label": "Client",
+      "value": "Southington Community Cultural Arts"
+    },
+    {
+      "label": "Role",
+      "value": "Website design, site builder, project manager."
+    }
+  ],
+  "bodyHtml": "<p>I developed this WordPress site Elementor page builder, Event Manager, and ACF (Advanced Custom Fields)</p>"
+}

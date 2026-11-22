@@ -1,0 +1,22 @@
+{
+  "title": "Social Impact Partners",
+  "category": "web",
+  "order": 2,
+  "published": true,
+  "image": {
+    "src": "/media/screenshot-2024-10-24-at-11.00.33-am.webp",
+    "alt": "Screenshot of the Social Impact Partners website"
+  },
+  "video": null,
+  "details": [
+    {
+      "label": "Agency",
+      "value": "The Narrative Project"
+    },
+    {
+      "label": "Role",
+      "value": "Website concept, site builder, project manager."
+    }
+  ],
+  "bodyHtml": "<p>I developed this WordPress site using a custom theme and Elementor page builder.</p>"
+}

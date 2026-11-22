@@ -1,0 +1,6 @@
+# Copy to .dev.vars for local testing (never commit .dev.vars)
+DEV_EDITOR_EMAIL=phillip@insightful.media
+GITHUB_TOKEN=github_pat_xxx
+CF_STREAM_TOKEN=xxx
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+RESEND_API_KEY=re_xxx

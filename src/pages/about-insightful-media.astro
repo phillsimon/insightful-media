@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { page, ed, testimonials } from '../lib/content';
+const { data, file } = page('about-insightful-media');
+const all = await testimonials(false);
+---
+<Layout title={data.title}>
+  <div class="about-grid">
+    <div>
+      <h2 {...ed(file, 'heading')}>{data.heading}</h2>
+      <div class="rich" {...ed(file, 'introHtml', 'html')} set:html={data.introHtml} />
+      <h2 class="bio-heading" {...ed(file, 'bioHeading')}>{data.bioHeading}</h2>
+      <div class="rich" {...ed(file, 'bioHtml', 'html')} set:html={data.bioHtml} />
+    </div>
+    <figure class="about-photo">
+      <img src={data.photo.src} alt={data.photo.alt} loading="lazy" {...ed(file, 'photo', 'image')} />
+      <figcaption {...ed(file, 'photoCaption')}>{data.photoCaption}</figcaption>
+    </figure>
+  </div>
+  <section class="about-testimonials">
+    <h2 {...ed(file, 'testimonialsHeading')}>{data.testimonialsHeading}</h2>
+    <ul class="t-boxed" data-collection="testimonial">
+      {all.map((t) => {
+        const f = `src/content/testimonials/${t.id}.json`;
+        return (
+          <li data-item={f} data-item-type="testimonial">
+            <p class="t-quote" {...ed(f, 'quote')}>{t.data.quote}</p>
+            <p class="t-name" {...ed(f, 'name')}>{t.data.name}</p>
+            <p class="t-title" {...ed(f, 'title')}>{t.data.title}</p>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+</Layout>

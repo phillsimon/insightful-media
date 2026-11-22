@@ -1,0 +1,9 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { page, ed } from '../lib/content';
+const { data, file } = page('privacy-policy');
+---
+<Layout title={data.title}>
+  <h2 class="page-title" {...ed(file, 'heading')}>{data.heading}</h2>
+  <div class="prose rich" {...ed(file, 'bodyHtml', 'html')} set:html={data.bodyHtml} />
+</Layout>

@@ -1,0 +1,17 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { page, ed } from '../lib/content';
+const { data, file } = page('how-we-work');
+---
+<Layout title={data.title}>
+  <h2 class="page-title" {...ed(file, 'heading')}>{data.heading}</h2>
+  <div class="how-grid">
+    <div>
+      <h2 class="sub" {...ed(file, 'subheading')}>{data.subheading}</h2>
+      <div class="rich" {...ed(file, 'bodyHtml', 'html')} set:html={data.bodyHtml} />
+    </div>
+    <div class="how-images">
+      {data.images.map((img: any, i: number) => <img src={img.src} alt={img.alt} width="300" height="300" loading="lazy" {...ed(file, `images.${i}`, 'image')} />)}
+    </div>
+  </div>
+</Layout>

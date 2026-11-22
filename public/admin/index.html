@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Insightful Media · Editor dashboard</title>
+  <link rel="stylesheet" href="/admin/editor.css" />
+  <style>
+    body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: #111; background: #f6f6f6; }
+    main { max-width: 980px; margin: 0 auto; padding: 24px 20px 60px; }
+    h1 { font-size: 26px; margin: 10px 0 4px; }
+    section { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px 20px; margin-top: 20px; }
+    section h2 { font-size: 20px; margin: 0 0 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    table { width: 100%; border-collapse: collapse; }
+    td, th { text-align: left; padding: 7px 6px; border-top: 1px solid #eee; vertical-align: top; }
+    th { font-size: 13px; color: #666; font-weight: 600; border-top: 0; }
+    td.actions { white-space: nowrap; text-align: right; }
+    td.actions button, section h2 button, .big a { font: 14px system-ui, sans-serif; padding: 6px 12px; border: 1px solid #999; border-radius: 4px; background: #fff; cursor: pointer; text-decoration: none; color: #000; }
+    .muted { color: #888; }
+    .tag { font-size: 12px; background: #eee; border-radius: 3px; padding: 1px 6px; margin-left: 6px; }
+    .big { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .big a.go { background: #e56c3e; border-color: #e56c3e; color: #fff; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Editor dashboard</h1>
+    <p id="who" class="muted">Checking login…</p>
+    <div class="big">
+      <a class="go" href="/">Edit the site on the page ✎</a>
+      <a href="/video-and-film/">Video and film</a>
+      <a href="/web-app-design/">Web &amp; app design</a>
+      <a href="/about-insightful-media/">Testimonials (About)</a>
+      <a href="/blog/">Blog</a>
+    </div>
+    <section data-col="post"><h2>Blog posts <button data-new="post">+ New blog post</button></h2><div class="list">Loading…</div></section>
+    <section data-col="caseStudy"><h2>Case studies <span><button data-new="caseStudy" data-cat="video">+ New video case study</button> <button data-new="caseStudy" data-cat="web">+ New web case study</button></span></h2><div class="list">Loading…</div></section>
+    <section data-col="testimonial"><h2>Testimonials <button data-new="testimonial">+ New testimonial</button></h2><div class="list">Loading…</div></section>
+    <section><h2>Site settings <button id="settings">Edit settings</button></h2>
+      <p class="muted">Meta description, Cloudflare Stream customer code, Turnstile site key, footer text.</p></section>
+    <p class="muted" style="margin-top:24px">Changes are committed to GitHub and the site rebuilds automatically, usually in about a minute. Every change is kept in GitHub history, so nothing is lost for good.</p>
+  </main>
+  <script>
+    try { localStorage.setItem('im-edit', '1'); } catch (e) {}
+    window.IM_NO_DECORATE = true;
+  </script>
+  <script src="/admin/editor.js"></script>
+  <script>
+  (async () => {
+    const E = window.IMEditor;
+    const who = document.getElementById('who');
+    try { const { email } = await E.api('/whoami/'); who.textContent = `Logged in as ${email}. Edit mode is on for this browser.`; }
+    catch (e) { who.textContent = 'Not logged in: ' + e.message; return; }
+    const titleOf = (t, d) => t === 'testimonial' ? `${d.name}` : d.title;
+    const subOf = (t, d) => t === 'caseStudy' ? (d.category === 'video' ? 'Video and film' : 'Web & app design') + ` · #${d.order}`
+      : t === 'post' ? String(d.date).slice(0, 10) : (d.featured ? `Home #${d.homeOrder} · ` : '') + `About #${d.order}`;
+    const sortOf = (t) => t === 'post' ? (a, b) => String(b.data.date).localeCompare(String(a.data.date))
+      : t === 'caseStudy' ? (a, b) => a.data.category.localeCompare(b.data.category) || a.data.order - b.data.order : (a, b) => a.data.order - b.data.order;
+    async function load(sec) {
+      const t = sec.dataset.col; const box = sec.querySelector('.list');
+      try {
+        const { items } = await E.api('/list/?collection=' + t);
+        items.sort(sortOf(t));
+        if (!items.length) { box.innerHTML = '<p class="muted">None yet.</p>'; return; }
+        const tb = document.createElement('table');
+        tb.innerHTML = '<tr><th>Title</th><th>Where</th><th></th></tr>';
+        for (const it of items) {
+          const tr = document.createElement('tr');
+          const td1 = document.createElement('td'); td1.textContent = titleOf(t, it.data);
+          if (!it.data.published) { const s = document.createElement('span'); s.className = 'tag'; s.textContent = 'hidden / draft'; td1.append(s); }
+          const td2 = document.createElement('td'); td2.className = 'muted'; td2.textContent = subOf(t, it.data);
+          const td3 = document.createElement('td'); td3.className = 'actions';
+          const ed = document.createElement('button'); ed.textContent = 'Edit'; ed.onclick = () => E.editItem(t, it.path, () => setTimeout(() => load(sec), 800)).catch((e) => E.toast(e.message, 'err'));
+          const del = document.createElement('button'); del.textContent = 'Delete'; del.className = 'im-danger'; del.onclick = () => E.deleteItem(it.path, titleOf(t, it.data), () => setTimeout(() => load(sec), 800));
+          td3.append(ed, ' ', del); tr.append(td1, td2, td3); tb.append(tr);
+        }
+        box.replaceChildren(tb);
+      } catch (e) { box.textContent = e.message; }
+    }
+    document.querySelectorAll('section[data-col]').forEach(load);
+    document.querySelectorAll('[data-new]').forEach((b) => b.addEventListener('click', () => {
+      const sec = b.closest('section'); const preset = b.dataset.cat ? { category: b.dataset.cat } : {};
+      E.newItem(b.dataset.new, preset, () => setTimeout(() => load(sec), 800));
+    }));
+    document.getElementById('settings').addEventListener('click', async () => {
+      const path = 'src/content/settings.json'; const d = await E.getFile(path);
+      const wrap = document.createElement('div'); wrap.className = 'im-form';
+      const fields = [['metaDescription', 'Meta description (search results)'], ['siteName', 'Site name (sidebar)'], ['shortName', 'Short name (mobile)'], ['ctaLabel', 'Button label'], ['footerText', 'Footer text'], ['contactEmail', 'Contact email'], ['streamCustomerCode', 'Cloudflare Stream customer code (from customer-XXXX.cloudflarestream.com)'], ['turnstileSiteKey', 'Turnstile site key (contact form spam check)']];
+      const inputs = {};
+      for (const [k, l] of fields) { const lab = document.createElement('label'); lab.className = 'im-field'; lab.textContent = l; const i = document.createElement('input'); i.type = 'text'; i.value = d[k] || ''; inputs[k] = i; lab.append(i); wrap.append(lab); }
+      const logo = E.imageField(d.logo, 'Logo'); wrap.append(logo.el);
+      E.modal('Site settings', wrap, { wide: true, onSave: async () => { const out = { ...d }; for (const k in inputs) out[k] = inputs[k].value.trim(); out.logo = logo.get() || d.logo; await E.putFile(path, out); E.toast('Saved. The live site updates in about a minute.'); } });
+    });
+  })();
+  </script>
+</body>
+</html>

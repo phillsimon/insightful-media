@@ -1,0 +1,22 @@
+{
+  "title": "Evolve Hair Replacement System",
+  "category": "video",
+  "order": 5,
+  "published": true,
+  "image": null,
+  "video": {
+    "provider": "youtube",
+    "id": "vbHBH04R4bo"
+  },
+  "details": [
+    {
+      "label": "Role",
+      "value": "Producer, director, cinematographer, editor."
+    },
+    {
+      "label": "Client",
+      "value": "Progressions Salon & Wig Boutique."
+    }
+  ],
+  "bodyHtml": "<p>This film describes a hair replacement system for people with alopecia. The camera was handheld except for the interview. I created a stylized treatment of the Salon’s logo using Adobe Illustrator.</p>"
+}

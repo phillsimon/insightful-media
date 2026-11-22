@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Testimonial from '../components/Testimonial.astro';
+import { page, ed, testimonials } from '../lib/content';
+const { data, file } = page('home');
+const featured = await testimonials(true);
+---
+<Layout>
+  <div class="home-intro" {...ed(file, 'introHtml', 'html')} set:html={data.introHtml} />
+  <section class="carousel" aria-roledescription="carousel" aria-label="Recent work" data-speed={data.carouselSpeed} {...ed(file, 'carousel', 'gallery')}>
+    <div class="carousel-track">
+      {data.carousel.map((img: any, i: number) => (
+        <div class="carousel-slide" aria-roledescription="slide" aria-label={`${i + 1} of ${data.carousel.length}`}>
+          <img src={img.src} alt={img.alt || 'Website screenshot'} loading={i === 0 ? 'eager' : 'lazy'} width="740" height="546" />
+        </div>
+      ))}
+    </div>
+    <button class="carousel-btn prev" aria-label="Previous slide">&#10094;</button>
+    <button class="carousel-btn next" aria-label="Next slide">&#10095;</button>
+    <div class="carousel-dots">{data.carousel.map((_: any, i: number) => <button aria-label={`Go to slide ${i + 1}`} aria-current={i === 0 ? 'true' : 'false'}></button>)}</div>
+  </section>
+  <section class="home-testimonials">
+    <h2 {...ed(file, 'testimonialsHeading')}>{data.testimonialsHeading}</h2>
+    {featured.map((t) => <Testimonial entry={t} />)}
+  </section>
+</Layout>
+<script>
+  document.querySelectorAll<HTMLElement>('.carousel').forEach((root) => {
+    const track = root.querySelector<HTMLElement>('.carousel-track')!;
+    const dots = [...root.querySelectorAll<HTMLButtonElement>('.carousel-dots button')];
+    const n = dots.length;
+    const speed = Number(root.dataset.speed) || 2000;
+    let i = 0, timer: number | undefined;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const go = (k: number) => { i = (k + n) % n; track.scrollTo({ left: i * track.clientWidth }); };
+    track.addEventListener('scroll', () => {
+      const k = Math.round(track.scrollLeft / track.clientWidth);
+      if (k !== i) i = k;
+      dots.forEach((d, j) => d.setAttribute('aria-current', String(j === i)));
+    }, { passive: true });
+    root.querySelector('.prev')!.addEventListener('click', () => { go(i - 1); stop(); });
+    root.querySelector('.next')!.addEventListener('click', () => { go(i + 1); stop(); });
+    dots.forEach((d, j) => d.addEventListener('click', () => { go(j); stop(); }));
+    const start = () => { if (!reduce && !document.body.classList.contains('im-editing')) timer = window.setInterval(() => go(i + 1), speed); };
+    const stop = () => { clearInterval(timer); timer = undefined; };
+    root.addEventListener('mouseenter', stop); root.addEventListener('mouseleave', () => { if (!timer) start(); });
+    root.addEventListener('focusin', stop);
+    start();
+  });
+</script>

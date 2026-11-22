@@ -1,0 +1,46 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { page, ed } from '../lib/content';
+const { data, file } = page('photography');
+---
+<Layout title={data.title} dark>
+  <h2 class="page-title" {...ed(file, 'heading')}>{data.heading}</h2>
+  <div class="masonry" {...ed(file, 'gallery', 'gallery')}>
+    {data.gallery.map((g: any, i: number) => (
+      <figure>
+        <button type="button" data-index={i} aria-label={`Open photo ${i + 1}${g.alt ? ': ' + g.alt : ''}`}>
+          <img src={g.src} alt={g.alt} loading={i < 6 ? 'eager' : 'lazy'} />
+        </button>
+        {g.caption && <figcaption>{g.caption}</figcaption>}
+      </figure>
+    ))}
+  </div>
+  <dialog class="lightbox" aria-label="Photo viewer">
+    <button class="lb-btn lb-close" aria-label="Close">&times;</button>
+    <button class="lb-btn lb-prev" aria-label="Previous photo">&#10094;</button>
+    <img alt="" />
+    <p></p>
+    <button class="lb-btn lb-next" aria-label="Next photo">&#10095;</button>
+  </dialog>
+</Layout>
+<script>
+  const dlg = document.querySelector<HTMLDialogElement>('.lightbox')!;
+  const figs = [...document.querySelectorAll<HTMLElement>('.masonry figure')];
+  const big = dlg.querySelector('img')!, cap = dlg.querySelector('p')!;
+  let cur = 0;
+  const show = (k: number) => {
+    cur = (k + figs.length) % figs.length;
+    const img = figs[cur].querySelector('img')!;
+    big.src = img.src; big.alt = img.alt;
+    cap.textContent = figs[cur].querySelector('figcaption')?.textContent || '';
+  };
+  figs.forEach((f, k) => f.querySelector('button')!.addEventListener('click', () => {
+    if (document.body.classList.contains('im-editing')) return;
+    show(k); dlg.showModal();
+  }));
+  dlg.querySelector('.lb-close')!.addEventListener('click', () => dlg.close());
+  dlg.querySelector('.lb-prev')!.addEventListener('click', () => show(cur - 1));
+  dlg.querySelector('.lb-next')!.addEventListener('click', () => show(cur + 1));
+  dlg.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') show(cur - 1); if (e.key === 'ArrowRight') show(cur + 1); });
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+</script>

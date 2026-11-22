@@ -1,0 +1,30 @@
+{
+  "title": "Teen Cope (Introduction)",
+  "category": "video",
+  "order": 4,
+  "published": true,
+  "image": null,
+  "video": {
+    "provider": "vimeo",
+    "id": "1085354584"
+  },
+  "details": [
+    {
+      "label": "Role",
+      "value": "Director, effects supervisor, casting."
+    },
+    {
+      "label": "Client",
+      "value": "Yale School of Nursing."
+    },
+    {
+      "label": "Primary Investigator",
+      "value": "Robin Whittemore, Ph.D."
+    },
+    {
+      "label": "Art direction and animation",
+      "value": "Kelsey Doherty."
+    }
+  ],
+  "bodyHtml": "<p>I supervised the creation of this animation to introduce a Web based intervention for teens with Type-1 diabetes.</p>"
+}

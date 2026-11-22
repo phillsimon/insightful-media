@@ -1,0 +1,26 @@
+{
+  "title": "Angelman Syndrome Foundation",
+  "category": "video",
+  "order": 1,
+  "published": true,
+  "image": null,
+  "video": {
+    "provider": "vimeo",
+    "id": "1085348780?h=b76d10c432"
+  },
+  "details": [
+    {
+      "label": "Role",
+      "value": "Producer, director, cinematographer, editor."
+    },
+    {
+      "label": "Client",
+      "value": "Angelman Syndrom Foundation."
+    },
+    {
+      "label": "Agency",
+      "value": "Brand Inspriation, Woodbridge, CT."
+    }
+  ],
+  "bodyHtml": "<p>The Angelman Syndrome Foundation wanted one-minute videos to distribute on social media using their brand message.</p>"
+}

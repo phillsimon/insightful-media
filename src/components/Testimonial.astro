@@ -1,0 +1,10 @@
+---
+import { ed } from '../lib/content';
+const { entry } = Astro.props;
+const file = `src/content/testimonials/${entry.id}.json`;
+---
+<div class="t-item" data-item={file} data-item-type="testimonial">
+  <p class="t-quote" {...ed(file, 'quote')}>{entry.data.quote}</p>
+  <p class="t-name" {...ed(file, 'name')}>{entry.data.name}</p>
+  <p class="t-title" {...ed(file, 'title')}>{entry.data.title}</p>
+</div>

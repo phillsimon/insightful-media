@@ -1,0 +1,22 @@
+{
+  "title": "Harvest Development Group",
+  "category": "web",
+  "order": 8,
+  "published": true,
+  "image": {
+    "src": "/media/harvest-home-page.webp",
+    "alt": "Screenshot of the Harvest Development Group website"
+  },
+  "video": null,
+  "details": [
+    {
+      "label": "Client",
+      "value": "Harvest Development Group"
+    },
+    {
+      "label": "Role",
+      "value": "Design and development"
+    }
+  ],
+  "bodyHtml": "<p>I developed this WordPress site using a custom template and Elementor page bulider.</p>"
+}

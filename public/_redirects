@@ -1,0 +1,24 @@
+# Old WordPress URLs -> new pages (301 = permanent, keeps search ranking)
+/home-horz-move/   /   301
+/home/             /   301
+/home-2/           /   301
+/home-3/           /   301
+/home2/            /   301
+/landing/          /   301
+/test-eventbrite/  /   301
+/services/         /what-we-provide/  301
+/working-with-you/ /how-we-work/      301
+/video-film/       /video-and-film/   301
+/contact-me/       /contact-us/       301
+/feed/             /blog/rss.xml      301
+/wbc/              /web-app-design/   301
+/ait/              /web-app-design/   301
+/crafting-ideas/   /                  301
+/second-slider/    /                  301
+/liver-site/       /web-app-design/   301
+/aortic-aneurysm-repair-patient-decision-tool/ /web-app-design/ 301
+/va-benefits-education/ /web-app-design/ 301
+/biomedical-training/   /web-app-design/ 301
+/jan-bush/         /web-app-design/   301
+/vimeo-video/*     /video-and-film/   301
+/wp-content/uploads/* /media/:splat   301

@@ -1,0 +1,22 @@
+{
+  "title": "Insomnia Clinic Montreal",
+  "category": "web",
+  "order": 9,
+  "published": true,
+  "image": {
+    "src": "/media/insomnia-clinic-home.webp",
+    "alt": "Screenshot of the Insomnia Clinic Montreal website"
+  },
+  "video": null,
+  "details": [
+    {
+      "label": "Client",
+      "value": "Behavioural Psychotherapy & Research Unit –Jewish General Hospital, Montreal, CA"
+    },
+    {
+      "label": "Role",
+      "value": "Design, development, and art direction."
+    }
+  ],
+  "bodyHtml": "<p>I designed this multi-lingual site using Google sites.</p>"
+}

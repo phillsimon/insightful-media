@@ -1,0 +1,13 @@
+{
+  "title": "About Insightful Media",
+  "heading": "Why Insightful Media?",
+  "introHtml": "<p>Hi. I’m Phillip Simon,<br><br>I started Insightful Media to help organizations develop and engage their audiences using digital media. I would enjoy discussing with you how I can support your digital and media design needs. <a href=\"/contact-us/\">Contact me</a> if you have any questions.</p><p>~Phill</p>",
+  "bioHeading": "A little bit about me",
+  "bioHtml": "<p>At the age of 13, visual storytelling became a part of my DNA with my first 35mm camera. I owned Nikon and Leica film cameras and loved them all. In college, I merged my photography and drawing skills into traditional printmaking. During my master’s program in the 1980s, I began experimenting with multimedia techniques – marrying image and sound to express ideas.</p><p>Shortly after, I collaborated with dance and theater companies to create sound designs for their performances. This led me to produce videos. In 1987 the Yale School of Medicine hired me to establish their internal video production unit.</p><p>By 1992, I moved my design approach to digital using computer graphics to express ideas. Eventually, I became an online educational specialist at Yale University. Over the 22 years at Yale, my responsibilities grew. Positions included Director of Operations for Web Design and Development at the Yale School of Medicine, Director of Operations for the Yale Center for Advanced Instructional Media, and Director of Biomedical Communications.</p><p>In 2009 I began working at Quinnipiac University as the Director of the Interactive Media graduate program in the School of Communications. Through the years I have helped launch careers for hundreds of talented designers, developers, coders, artists, data experts and digital researchers around the globe. It’s been extremely rewarding.</p><p>I left Quinnipiac University in 2022 to focus my attention on helping clients with web design, video and film, photography, and app development, culminating with the start of Insightful Media LLC. in 2024.</p>",
+  "photo": {
+    "src": "/media/phill-in-studio.webp",
+    "alt": "Photo of Phillip SImon directing a film"
+  },
+  "photoCaption": "Insightful Media owner, Phillip Simon directing on the set.",
+  "testimonialsHeading": "Testimonials"
+}

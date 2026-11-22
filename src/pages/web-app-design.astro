@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CaseStudy from '../components/CaseStudy.astro';
+import { page, ed, caseStudies } from '../lib/content';
+const { data, file } = page('web-app-design');
+const items = await caseStudies('web');
+---
+<Layout title={data.title}>
+  <h2 class="page-title" {...ed(file, 'heading')}>{data.heading}</h2>
+  <div class="case-list" data-collection="caseStudy" data-category="web">
+    {items.map((e) => <CaseStudy entry={e} />)}
+  </div>
+</Layout>

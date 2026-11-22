@@ -1,0 +1,15 @@
+{
+  "siteName": "Insightful Media LLC™",
+  "shortName": "Insightful Media™",
+  "metaDescription": "Insightful Media LLC is a media design company that provides a complete set of creative and development services to create exceptional audience experiences.",
+  "logo": {
+    "src": "/media/logo-mark.webp",
+    "alt": "Insightful Media logo"
+  },
+  "ctaLabel": "let's talk!",
+  "ctaHref": "/contact-us/",
+  "footerText": "Insightful Media LLC",
+  "contactEmail": "phillip@insightful.media",
+  "streamCustomerCode": "",
+  "turnstileSiteKey": ""
+}

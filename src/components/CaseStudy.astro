@@ -1,0 +1,29 @@
+---
+import Video from './Video.astro';
+import { ed } from '../lib/content';
+const { entry } = Astro.props;
+const d = entry.data;
+const file = `src/content/case-studies/${entry.id}.json`;
+const isVideo = d.category === 'video';
+const details = d.details.map((x: any) => `<p><strong>${esc(x.label)}</strong>: ${esc(x.value)}</p>`).join('');
+function esc(s: string) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+---
+<article class:list={['case', isVideo ? 'case-video' : 'case-web']} id={entry.id} data-item={file} data-item-type="caseStudy">
+  <div class="case-media">
+    {isVideo
+      ? <Video video={d.video} title={d.title} edit={ed(file, 'video', 'video')} />
+      : d.image?.src && <img src={d.image.src} alt={d.image.alt} loading="lazy" {...ed(file, 'image', 'image')} />}
+  </div>
+  <div class="case-text">
+    <h3 {...ed(file, 'title')}>{d.title}</h3>
+    {isVideo
+      ? <>
+          <div class="rich" {...ed(file, 'bodyHtml', 'html')} set:html={d.bodyHtml} />
+          <div class="case-details" {...ed(file, 'details', 'list')} set:html={details} />
+        </>
+      : <>
+          <div class="case-details" {...ed(file, 'details', 'list')} set:html={details} />
+          <div class="rich" {...ed(file, 'bodyHtml', 'html')} set:html={d.bodyHtml} />
+        </>}
+  </div>
+</article>

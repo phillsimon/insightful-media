@@ -1,0 +1,44 @@
+{
+  "title": "Home",
+  "introHtml": "<p>Insightful Media LLC is a media design company that provides a complete set of creative and development services to create exceptional audience experiences.</p>",
+  "carousel": [
+    {
+      "src": "/media/screenshot-2025-05-16-at-5.56.32-pm.webp",
+      "alt": ""
+    },
+    {
+      "src": "/media/screenshot-2025-05-16-at-5.57.13-pm.webp",
+      "alt": ""
+    },
+    {
+      "src": "/media/harvest-home-page.webp",
+      "alt": ""
+    },
+    {
+      "src": "/media/screenshot-2025-05-16-at-5.55.49-pm.webp",
+      "alt": ""
+    },
+    {
+      "src": "/media/screenshot-2024-01-13-at-5.12.36-pm.webp",
+      "alt": "Screen from CitySeed web site"
+    },
+    {
+      "src": "/media/screenshot-2025-05-16-at-5.52.27-pm.webp",
+      "alt": ""
+    },
+    {
+      "src": "/media/screenshot-2025-05-16-at-5.53.58-pm.webp",
+      "alt": ""
+    },
+    {
+      "src": "/media/screenshot-2025-05-16-at-6.04.46-pm.webp",
+      "alt": ""
+    },
+    {
+      "src": "/media/screenshot-2025-05-16-at-6.16.21-pm.webp",
+      "alt": ""
+    }
+  ],
+  "carouselSpeed": 2000,
+  "testimonialsHeading": "What others say about Insightful Media owner Phillip Simon."
+}

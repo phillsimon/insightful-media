@@ -1,0 +1,22 @@
+{
+  "title": "Just Eat Half",
+  "category": "web",
+  "order": 4,
+  "published": true,
+  "image": {
+    "src": "/media/screenshot-2025-05-17-at-10.50.28-am.webp",
+    "alt": "Screenshot of the Just Eat Half website"
+  },
+  "video": null,
+  "details": [
+    {
+      "label": "Client",
+      "value": "Phillip Simon"
+    },
+    {
+      "label": "Role",
+      "value": "Website design, site builder, author."
+    }
+  ],
+  "bodyHtml": "<p>I developed this WordPress to support my Just Eat Half book sales. WooCommerce is used for the online purchases.</p>"
+}

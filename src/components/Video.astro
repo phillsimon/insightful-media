@@ -1,0 +1,17 @@
+---
+import { settings } from '../lib/content';
+interface Props { video: { provider: 'stream' | 'youtube' | 'vimeo'; id: string; poster?: string } | null | undefined; title: string; edit?: Record<string, string>; }
+const { video, title, edit = {} } = Astro.props;
+let src = '';
+if (video?.provider === 'youtube') src = `https://www.youtube-nocookie.com/embed/${video.id}?rel=0`;
+else if (video?.provider === 'vimeo') {
+  const [id, q] = video.id.split('?');
+  src = `https://player.vimeo.com/video/${id}?${q ? q + '&' : ''}dnt=1`;
+} else if (video?.provider === 'stream') {
+  const base = settings.streamCustomerCode ? `https://customer-${settings.streamCustomerCode}.cloudflarestream.com` : 'https://iframe.videodelivery.net';
+  src = `${base}/${video.id}/iframe` + (video.poster ? `?poster=${encodeURIComponent(video.poster)}` : '');
+}
+---
+<div class="video-frame" {...edit}>
+  {src && <iframe src={src} title={title} loading="lazy" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>}
+</div>

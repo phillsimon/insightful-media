@@ -1,0 +1,22 @@
+{
+  "title": "ATEC for Adults - Introduction",
+  "category": "video",
+  "order": 2,
+  "published": true,
+  "image": null,
+  "video": {
+    "provider": "vimeo",
+    "id": "1085352702"
+  },
+  "details": [
+    {
+      "label": "Role",
+      "value": "Co-producer, director, cinematographer, editor."
+    },
+    {
+      "label": "Client",
+      "value": "Dr. Morris Bell from Yale University."
+    }
+  ],
+  "bodyHtml": "<p>This video is an introduction to a series of 30 short tests used in the Activate Test of Embodied Cognition for adults.</p>"
+}
