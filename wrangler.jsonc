@@ -10,8 +10,8 @@
     "GITHUB_REPO": "phillsimon/insightful-media",
     "GITHUB_BRANCH": "main",
     // Cloudflare Access: your team domain and the Application Audience (AUD) tag.
-    "ACCESS_TEAM_DOMAIN": "CHANGE-ME.cloudflareaccess.com",
-    "ACCESS_AUD": "CHANGE-ME",
+    "ACCESS_TEAM_DOMAIN": "restless-leaf-c5d6.cloudflareaccess.com",
+    "ACCESS_AUD": "160bfc5ae178450c8a4ec9b2a963c3681e435761b6f2669383d2004addf296bd",
     // Allowed editor emails (comma separated).
     "EDITOR_EMAILS": "phillip@insightful.media",
     // Contact form
