@@ -17,7 +17,7 @@
     // Contact form
     "CONTACT_TO": "phillip@insightful.media",
     "CONTACT_FROM": "Insightful Media website <website@send.insightful.media>",
-    "CF_ACCOUNT_ID": "CHANGE-ME"
+    "CF_ACCOUNT_ID": "6ab530ef7776425046ef089237b1ed6c"
   }
   // Secrets (set with `npx wrangler secret put NAME`, never put here):
   //   GITHUB_TOKEN       fine-grained token, Contents: read/write on the repo
