@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insightful Media</title>
+<meta name="description" content="Insightful Media LLC is a media design company that provides a complete set of creative and development services to create exceptional audience experiences.">
+<style>
+
+/* ---- Reset & base ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: #0a0a0a;
+  color: #fff;
+  font-family: system-ui, -apple-system, sans-serif;
+  overflow: hidden; /* no page scroll — this is the whole experience */
+}
+
+/* ---- Canvas wrapper ---- */
+#stage {
+  position: fixed;
+  inset: 0;
+  /* Stage is just a backdrop — canvas and controls position themselves */
+  pointer-events: none;
+}
+
+#canvas-wrap {
+  position: fixed;
+  /* Square canvas — sized to the LARGER viewport dimension so it always fills the screen */
+  width: 100vmax;
+  height: 100vmax;
+  /* Center both axes */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  flex-shrink: 0;
+}
+
+/* Canvas fills the logical space; internal buffer is 3x for orbit headroom */
+#igp-cone {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  touch-action: none;
+  transform-origin: 50% 50%;
+  cursor: grab;
+  pointer-events: all;
+}
+#igp-cone.orbiting { cursor: grabbing; }
+
+@media (max-width: 600px) {
+  #canvas-wrap {
+    width: 92vw;
+    height: 92vw;
+  }
+}
+
+/* ---- Control bar ---- */
+#controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  pointer-events: none;
+  /* Float over the canvas at the bottom */
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  z-index: 100;
+}
+#controls.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: all;
+}
+
+
+.ctrl-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1.5px solid #F7941D;
+  border-radius: 999px;
+  background: transparent;
+  color: #F7941D;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+.ctrl-btn:hover, .ctrl-btn.active {
+  background: #F7941D;
+  color: #0a0a0a;
+}
+.ctrl-btn svg {
+  width: 14px; height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* ---- Easter egg "enter" ---- */
+/* easter egg drawn on canvas */
+
+/* ---- Info popup ---- */
+#popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+#popup-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+#popup {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 40px 36px 32px;
+  max-width: 520px;
+  width: 90vw;
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.4s;
+}
+#popup-overlay.visible #popup {
+  transform: translateY(0);
+}
+#popup h2 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #F7941D;
+  letter-spacing: 0.04em;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+#popup p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.82);
+}
+#popup p + p {
+  margin-top: 14px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  font-style: italic;
+}
+#popup-close {
+  position: absolute;
+  top: 14px; right: 18px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+#popup-close:hover { color: #fff; }
+
+/* ---- Subtle credit line ---- */
+#credit {
+  position: fixed;
+  bottom: 14px;
+  right: 18px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  user-select: none;
+}
+
+</style>
+</head>
+<body>
+
+<p style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;margin:-1px;padding:0;">Insightful Media LLC is a media design company that provides a complete set of creative and development services to create exceptional audience experiences.</p>
+<div id="stage">
+
+  <!-- Canvas -->
+  <div id="canvas-wrap">
+    <canvas id="igp-cone"></canvas>
+    <!-- easter egg drawn on canvas -->
+  </div>
+
+  <!-- Control bar — kept as invisible placeholder so JS refs don't break -->
+  <div id="controls" style="display:none">
+    <button id="btn-zoom-in"></button>
+    <button id="btn-zoom-out"></button>
+    <button id="btn-orbit"></button>
+    <button id="btn-restart"></button>
+    <button id="btn-info"></button>
+  </div>
+
+</div>
+
+<!-- Info popup -->
+<div id="popup-overlay">
+  <div id="popup">
+    <button id="popup-close">&times;</button>
+    <h2>About this animation</h2>
+    <p>This animation is a living construction of Islamic geometric pattern — the same compass-and-straightedge tradition used by craftsmen in Persia, Moorish Andalusia, and the Mamluk courts for over a thousand years. It was built in collaboration between Phillip Simon and Claude, Anthropic's AI, through an iterative conversation exploring the mathematics of symmetry, nested form, and three-dimensional space. Every loop generates a unique composition — no two are ever the same.</p>
+    <p>Zoom in deep enough and the geometry will show you the way in.</p>
+  </div>
+</div>
+
+<div id="credit">Insightful Media</div>
+
+<script>
+(function(){
+
+  /* =====================================================================
+     ANIMATION ENGINE  (unchanged from the Elementor version)
+     ===================================================================== */
+
+  var canvas = document.getElementById('igp-cone');
+  var ctx = canvas.getContext('2d');
+
+  var SIZE = 900;
+  var CANVAS_SIZE = SIZE * 3; // 3x gives orbit headroom
+  var DPR = Math.min(window.devicePixelRatio || 1, 2); // cap DPR at 2
+  // Total canvas = 2700 * 2 = 5400px — within all browser limits.
+  // Zoom is in project() math; no CSS transform; no canvas resize.
+  var TOTAL_SCALE = DPR;
+
+  canvas.width  = CANVAS_SIZE * TOTAL_SCALE;
+  canvas.height = CANVAS_SIZE * TOTAL_SCALE;
+  ctx.scale(TOTAL_SCALE, TOTAL_SCALE);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
+  var CX = CANVAS_SIZE / 2, CY = CANVAS_SIZE / 2;
+  var LINE = '#ffffff';
+  var FILL_INNER, FILL_POINT, FILL_ACCENT;
+
+  function hslToRgb(h, s, l) {
+    var c = (1 - Math.abs(2*l-1))*s, x = c*(1-Math.abs((h/60)%2-1)), m = l-c/2;
+    var r=0,g=0,b=0;
+    if(h<60){r=c;g=x;}else if(h<120){r=x;g=c;}else if(h<180){g=c;b=x;}
+    else if(h<240){g=x;b=c;}else if(h<300){r=x;b=c;}else{r=c;b=x;}
+    return{r:Math.round((r+m)*255),g:Math.round((g+m)*255),b:Math.round((b+m)*255)};
+  }
+
+  function newPalette() {
+    var h0=Math.random()*360, h1=(h0+120)%360, h2=(h0+240)%360;
+    var s=0.7+Math.random()*0.2, l=0.45+Math.random()*0.15;
+    var c0=hslToRgb(h0,s,l), c1=hslToRgb(h1,s,l), c2=hslToRgb(h2,s,l);
+    FILL_INNER  = 'rgba('+c0.r+','+c0.g+','+c0.b+',0.50)';
+    FILL_POINT  = 'rgba('+c1.r+','+c1.g+','+c1.b+',0.28)';
+    FILL_ACCENT = 'rgba('+c2.r+','+c2.g+','+c2.b+',0.18)';
+  }
+  newPalette();
+
+  var Z_STEP = 210;
+  function rand(a,b){return a+Math.random()*(b-a);}
+  function pick(a){return a[Math.floor(Math.random()*a.length)];}
+  function gcd(a,b){return b===0?a:gcd(b,a%b);}
+
+  function intersect(p1,p2,p3,p4){
+    var x1=p1.x,y1=p1.y,x2=p2.x,y2=p2.y,x3=p3.x,y3=p3.y,x4=p4.x,y4=p4.y;
+    var d=(x1-x2)*(y3-y4)-(y1-y2)*(x3-x4);
+    if(Math.abs(d)<1e-9)return null;
+    var t=((x1-x3)*(y3-y4)-(y1-y3)*(x3-x4))/d;
+    return{x:x1+t*(x2-x1),y:y1+t*(y2-y1)};
+  }
+
+  function matMul(A,B){var C=new Array(9);for(var r=0;r<3;r++)for(var c=0;c<3;c++){C[r*3+c]=A[r*3+0]*B[0*3+c]+A[r*3+1]*B[1*3+c]+A[r*3+2]*B[2*3+c];}return C;}
+  function matRotX(a){var c=Math.cos(a),s=Math.sin(a);return[1,0,0,0,c,-s,0,s,c];}
+  function matRotY(a){var c=Math.cos(a),s=Math.sin(a);return[c,0,s,0,1,0,-s,0,c];}
+  function matIdentity(){return[1,0,0,0,1,0,0,0,1];}
+  function matVec(M,x,y,z){return{x:M[0]*x+M[1]*y+M[2]*z,y:M[3]*x+M[4]*y+M[5]*z,z:M[6]*x+M[7]*y+M[8]*z};}
+
+  function project(x,y,z,tilt,spin){
+    if(interact.frozen){
+      var ox=x-CX,oy=y-CY;
+      var v=matVec(interact.rotMat,ox,oy,z);
+      var fov=900, sc=fov/(fov+v.z);
+      return{x:CX+v.x*sc,y:CY+v.y*sc,scale:sc};
+    }
+    var ox=x-CX,oy=y-CY;
+    var sx=ox*Math.cos(spin)-oy*Math.sin(spin);
+    var sy=ox*Math.sin(spin)+oy*Math.cos(spin);
+    var ty=sy*Math.cos(tilt)-z*Math.sin(tilt);
+    var tz=sy*Math.sin(tilt)+z*Math.cos(tilt);
+    var fov=900,sc=fov/(fov+tz);
+    return{x:CX+sx*sc,y:CY+ty*sc,scale:sc};
+  }
+
+  function newComposition(cx,cy,R,zLevel){
+    var N=pick([8,10,10,10,12]);
+    var vs=[];for(var s=2;s<N/2;s++)if(gcd(s,N)===1)vs.push(s);
+    if(!vs.length)for(var s2=2;s2<N/2;s2++)vs.push(s2);
+    var step=pick(vs);
+    var rotation=rand(0,Math.PI*2),lineWeight=rand(1.5,2.1),faintAlpha=rand(0.35,0.50);
+    var pts=[];
+    for(var i=0;i<N;i++){var a=-Math.PI/2+rotation+(i*Math.PI*2/N);pts.push({x:cx+R*Math.cos(a),y:cy+R*Math.sin(a),z:zLevel});}
+    var p1=[],p2=[];
+    for(var i=0;i<N;i+=2)p1.push(pts[i]);p1.push(p1[0]);
+    for(var i=1;i<N;i+=2)p2.push(pts[i]);p2.push(p2[0]);
+    var star=[],idx=0;do{star.push(pts[idx]);idx=(idx+step)%N;}while(idx!==0);star.push(pts[0]);
+    var chords=[];for(var i=0;i<N;i++)chords.push([pts[i],pts[(i+step)%N]]);
+    var inner=[];
+    if(step>=3){for(var i=0;i<N;i++){var j=((i-(step-1))%N+N)%N;var p=intersect(chords[i][0],chords[i][1],chords[j][0],chords[j][1]);if(p)inner.push({x:p.x,y:p.y,z:zLevel});}}
+    var ic=inner.length>2?inner.concat([inner[0]]):null;
+    var pt=null;if(inner.length===N){pt=[];for(var i=0;i<N;i++)pt.push([inner[(i-1+N)%N],pts[i],inner[i]]);}
+    var ir=0;if(inner.length>=3){var mx=(inner[0].x+inner[1].x)/2,my=(inner[0].y+inner[1].y)/2;ir=Math.sqrt((mx-cx)*(mx-cx)+(my-cy)*(my-cy));}
+    return{cx:cx,cy:cy,z:zLevel,R:R,N:N,step:step,pts:pts,poly1:p1,poly2:p2,star:star,inner:ic,pointTriangles:pt,innerRadius:ir,lineWeight:lineWeight,faint:'rgba(255,255,255,'+faintAlpha.toFixed(3)+')'};
+  }
+
+  function newScene(){
+    var lvls=[],r=420,minR=[50,32,22,16],zElev=0;
+    for(var i=0;i<4;i++){if(r<minR[i])break;var c=newComposition(CX,CY,r,zElev);lvls.push(c);r=c.innerRadius*0.86;zElev+=Z_STEP;}
+    return lvls;
+  }
+
+  var easeInOut=function(t){return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;};
+
+  function buildCompTimeline(comp,offset,sf){
+    var hi=!!comp.inner,hf=!!comp.pointTriangles&&hi;
+    var durs=[900*sf,500*sf,800*sf,800*sf,1100*sf,hi?800*sf:0,hf?700*sf:0,hf?500*sf:0];
+    var t=offset,built=[];for(var i=0;i<durs.length;i++){built.push({start:t,dur:durs[i]});t+=durs[i];}
+    return{stages:built,endTime:t};
+  }
+
+  function buildScene(comps){
+    var sf=rand(0.7,0.9),tls=[],t=0;
+    for(var i=0;i<comps.length;i++){var tl=buildCompTimeline(comps[i],t,sf);tls.push(tl);t=tl.endTime;}
+    return{timelines:tls,sf:sf,BUILD_END:t,TOTAL:t*2+800*sf};
+  }
+
+  function sp(t,s){if(!s||s.dur===0)return 0;if(t<s.start)return 0;if(t>s.start+s.dur)return 1;return easeInOut((t-s.start)/s.dur);}
+
+  function projPt(p,tilt,spin){return project(p.x,p.y,p.z||0,tilt,spin);}
+
+  function drawArcProj(cx,cy,z,r,prog,color,w,tilt,spin){
+    if(prog<=0)return;
+    var steps=Math.max(64,Math.floor(r*1.2)),totalAngle=Math.PI*2*prog;
+    ctx.strokeStyle=color;ctx.lineWidth=Math.max(0.8,w);ctx.beginPath();var first=true;
+    for(var i=0;i<=steps;i++){var a=-Math.PI/2+(i/steps)*totalAngle;var pp=project(cx+r*Math.cos(a),cy+r*Math.sin(a),z,tilt,spin);if(first){ctx.moveTo(pp.x,pp.y);first=false;}else ctx.lineTo(pp.x,pp.y);}
+    ctx.stroke();
+  }
+
+  function drawAL(p1,p2,prog,tilt,spin){
+    if(prog<=0)return;
+    var ex=p1.x+(p2.x-p1.x)*prog,ey=p1.y+(p2.y-p1.y)*prog,ez=p1.z+(p2.z-p1.z)*prog;
+    var pp1=projPt(p1,tilt,spin),pp2=project(ex,ey,ez,tilt,spin);
+    ctx.beginPath();ctx.moveTo(pp1.x,pp1.y);ctx.lineTo(pp2.x,pp2.y);ctx.stroke();
+  }
+
+  function drawPtProj(p,prog,size,tilt,spin){
+    if(prog<=0)return;var pp=projPt(p,tilt,spin);
+    ctx.beginPath();ctx.arc(pp.x,pp.y,(size||3)*prog*pp.scale,0,Math.PI*2);ctx.fill();
+  }
+
+  function drawPolyProj(arr,prog,color,w,tilt,spin){
+    if(prog<=0||!arr)return;ctx.strokeStyle=color;ctx.lineWidth=Math.max(0.8,w);
+    var segs=arr.length-1,total=prog*segs;
+    for(var s=0;s<segs;s++){var v=Math.max(0,Math.min(1,total-s));if(v<=0)break;drawAL(arr[s],arr[s+1],v,tilt,spin);}
+  }
+
+  function applyAlpha(c,m){var r=c.match(/rgba?\(([^)]+)\)/);if(!r)return c;var p=r[1].split(',').map(parseFloat);var a=(p[3]!==undefined?p[3]:1)*m;return'rgba('+p[0]+','+p[1]+','+p[2]+','+a.toFixed(3)+')';}
+
+  function fillTriProj(tri,alpha,base,tilt,spin){
+    if(alpha<=0)return;var p0=projPt(tri[0],tilt,spin),p1=projPt(tri[1],tilt,spin),p2=projPt(tri[2],tilt,spin);
+    ctx.fillStyle=applyAlpha(base,alpha);ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.closePath();ctx.fill();
+  }
+
+  function fillPolyProj(arr,alpha,base,tilt,spin){
+    if(alpha<=0||!arr)return;ctx.fillStyle=applyAlpha(base,alpha);ctx.beginPath();
+    var p0=projPt(arr[0],tilt,spin);ctx.moveTo(p0.x,p0.y);
+    for(var i=1;i<arr.length;i++){var pp=projPt(arr[i],tilt,spin);ctx.lineTo(pp.x,pp.y);}
+    ctx.closePath();ctx.fill();
+  }
+
+  var BG_R=10,BG_G=10,BG_B=10;
+  var levelBrightness=[1.0,1.0,1.0,1.0];
+  var levelScales=[1,0.82,0.65,0.50];
+  var levelPtSizes=[3,2.2,1.6,1.1];
+
+  function atmC(b,r,g,bl,a){var cr=Math.round(BG_R+(r-BG_R)*b),cg=Math.round(BG_G+(g-BG_G)*b),cb=Math.round(BG_B+(bl-BG_B)*b),ca=a*b;return'rgba('+cr+','+cg+','+cb+','+ca.toFixed(3)+')';}
+  function atmLine(b){return atmC(b,255,255,255,1.0);}
+  function atmColor(b,col){var m=col.match(/rgba?\(([^)]+)\)/);if(!m)return col;var p=m[1].split(',').map(parseFloat);return atmC(b,p[0],p[1],p[2],p[3]!==undefined?p[3]:1);}
+
+  function renderComp(comp,tl,t,level,tilt,spin){
+    var ls=levelScales[level]||0.5,ps=levelPtSizes[level]||1.0;
+    var brite=levelBrightness[level]!==undefined?levelBrightness[level]:0.15;
+    var lc=atmLine(brite),fi=atmColor(brite,FILL_INNER),fp=atmColor(brite,FILL_POINT),fc=atmColor(brite,comp.faint);
+    if(comp.pointTriangles){var pPF=sp(t,tl.stages[6]);if(pPF>0)for(var i=0;i<comp.pointTriangles.length;i++){var lt=Math.max(0,Math.min(1,pPF*comp.pointTriangles.length-i));if(lt>0)fillTriProj(comp.pointTriangles[i],lt,fp,tilt,spin);}}
+    var pIF=sp(t,tl.stages[7]);if(pIF>0&&comp.inner)fillPolyProj(comp.inner,pIF,fi,tilt,spin);
+    drawArcProj(comp.cx,comp.cy,comp.z,comp.R,sp(t,tl.stages[0]),fc,1.2*ls,tilt,spin);
+    var pP=sp(t,tl.stages[1]);if(pP>0){ctx.fillStyle=lc;for(var i=0;i<comp.N;i++)drawPtProj(comp.pts[i],Math.max(0,Math.min(1,pP*comp.N-i)),ps,tilt,spin);}
+    drawPolyProj(comp.poly1,sp(t,tl.stages[2]),fc,1.2*ls,tilt,spin);
+    drawPolyProj(comp.poly2,sp(t,tl.stages[3]),fc,1.2*ls,tilt,spin);
+    drawPolyProj(comp.star, sp(t,tl.stages[4]),lc,comp.lineWeight*ls,tilt,spin);
+    if(comp.inner)drawPolyProj(comp.inner,sp(t,tl.stages[5]),lc,comp.lineWeight*ls*0.9,tilt,spin);
+  }
+
+  function renderFrame(scene,comps,t){
+    ctx.clearRect(0,0,CANVAS_SIZE,CANVAS_SIZE);
+    ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash([]);
+    var drawT=Math.min(t,scene.BUILD_END);
+    for(var i=0;i<comps.length;i++)renderComp(comps[i],scene.timelines[i],drawT,i,0,0);
+  }
+
+  /* =====================================================================
+     INTERACTION STATE
+     ===================================================================== */
+
+  var interact = {
+    active: false,
+    orbitMode: false,  // toggled by orbit button
+    rotMat: matIdentity(),
+    lastX: 0, lastY: 0,
+    frozen: false,
+    zoom: 1.0,
+    pinchDist: null
+  };
+
+  function applyZoom() {
+  }
+
+  // ---- Canvas easter egg ----
+  // Drawn at the center of the innermost ring in 3D space.
+  // Projects with the geometry so it moves correctly during orbit and zoom.
+  var EASTER_URL       = '/';
+  var EASTER_THRESHOLD = 1.8;
+  var eggProjected     = null; // hit region in CSS canvas space, updated each frame
+
+  function drawEasterEgg(comps, tilt, spin) {
+    if (interact.zoom < EASTER_THRESHOLD) { eggProjected = null; return; }
+
+    var deepest   = comps[comps.length - 1];
+    var z         = deepest.z;
+    var fadeAlpha = Math.min(1, (interact.zoom - EASTER_THRESHOLD) / 0.4);
+    if (fadeAlpha <= 0.01) { eggProjected = null; return; }
+
+    // Project center and two axis points of the innermost ring
+    var O  = project(CX,             CY,             z, tilt, spin);
+    var PR = project(CX + deepest.R, CY,             z, tilt, spin);
+    var PU = project(CX,             CY + deepest.R, z, tilt, spin);
+
+    // Projected axis vectors
+    var rx = PR.x - O.x, ry = PR.y - O.y; // right axis
+    var ux = PU.x - O.x, uy = PU.y - O.y; // up axis
+
+    // Projected radii (perspective + tilt foreshortened)
+    var projR = Math.sqrt(rx*rx + ry*ry);
+    var projU = Math.sqrt(ux*ux + uy*uy);
+    var squish = projR > 0.001 ? projU / projR : 1;
+    var angle  = Math.atan2(ry, rx);
+
+    // Button radius: 55% of the inner ring's projected radius (10% padding each side)
+    var btnR = Math.max(18, projR * 0.55);
+    // dotR removed — using hand icon instead of dot
+
+    ctx.save();
+    ctx.translate(O.x, O.y);
+    ctx.rotate(angle);
+    ctx.scale(1, squish); // foreshorten vertically with tilt
+    ctx.translate(0, -4 * (btnR / 78)); // nudge up to visually centre the hand
+
+    // ---- Drop shadow settings ----
+    var shadowAlpha = 0.75 * fadeAlpha; // change 0.75 to adjust darkness
+    var shadowBlur  = btnR * 0.5;       // change 0.5 to adjust softness
+    var shadowOff   = btnR * 0.15;      // change 0.15 to adjust depth offset
+
+    // Scale everything relative to btnR so it fits inside the innermost ring
+    var s = btnR / 78; // scale so full icon fits inside btnR with padding
+
+    ctx.strokeStyle = 'rgba(255,255,255,' + fadeAlpha.toFixed(2) + ')';
+    ctx.fillStyle   = 'rgba(255,255,255,' + fadeAlpha.toFixed(2) + ')';
+    ctx.lineWidth   = Math.max(0.5, 4 * s);
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+
+    // Apply drop shadow before drawing
+    ctx.shadowColor   = 'rgba(0,0,0,' + shadowAlpha.toFixed(2) + ')';
+    ctx.shadowBlur    = shadowBlur;
+    ctx.shadowOffsetX = shadowOff;
+    ctx.shadowOffsetY = shadowOff;
+
+    // ---- Draw the tap/pointer hand icon in local space ----
+    // Icon centred at (0,0), fits within ~±btnR.
+    // Hand body: upward pointing index finger + 3 folded fingers + palm + thumb
+    // All coords in normalised units multiplied by s.
+
+    ctx.beginPath();
+    // Index finger (pointing up)
+    ctx.moveTo(  0   * s, -55 * s);
+    ctx.bezierCurveTo(
+       8 * s, -60 * s,
+      16 * s, -55 * s,
+      16 * s, -38 * s
+    );
+    // Finger 2 (middle, slightly shorter, folded)
+    ctx.lineTo( 16 * s, -22 * s);
+    ctx.bezierCurveTo(
+      16 * s, -30 * s,
+      28 * s, -30 * s,
+      28 * s, -18 * s
+    );
+    // Finger 3 (ring)
+    ctx.lineTo( 28 * s, -8  * s);
+    ctx.bezierCurveTo(
+      28 * s, -16 * s,
+      40 * s, -16 * s,
+      40 * s,  -4  * s
+    );
+    // Finger 4 (pinky)
+    ctx.lineTo( 40 * s,  4  * s);
+    ctx.bezierCurveTo(
+      40 * s,  -4 * s,
+      50 * s,  -2 * s,
+      50 * s,  8  * s
+    );
+    // Palm bottom-right curve
+    ctx.bezierCurveTo(
+      50 * s,  26 * s,
+      42 * s,  40 * s,
+      24 * s,  50 * s
+    );
+    // Palm bottom-left
+    ctx.bezierCurveTo(
+       6 * s,  58 * s,
+     -16 * s,  52 * s,
+     -24 * s,  36 * s
+    );
+    // Thumb side
+    ctx.lineTo(-24 * s,  8  * s);
+    ctx.bezierCurveTo(
+     -24 * s, -2  * s,
+     -16 * s, -6  * s,
+      -8 * s, -4  * s
+    );
+    // Back up to index finger base
+    ctx.lineTo( -8 * s, -38 * s);
+    ctx.bezierCurveTo(
+      -8 * s, -55 * s,
+       0 * s, -60 * s,
+       0 * s, -55 * s
+    );
+    ctx.closePath();
+    ctx.stroke();
+
+    // ---- Ripple rings above fingertip ----
+    // Two concentric arcs above the finger tip to suggest tapping
+    var tipX = 4 * s, tipY = -58 * s;
+    var r1 = 10 * s, r2 = 17 * s;
+
+    // Inner ripple arc
+    ctx.beginPath();
+    ctx.arc(tipX, tipY, r1, Math.PI * 1.15, Math.PI * 1.85, false);
+    ctx.stroke();
+
+    // Outer ripple arc
+    ctx.beginPath();
+    ctx.arc(tipX, tipY, r2, Math.PI * 1.1, Math.PI * 1.9, false);
+    ctx.stroke();
+
+    // Reset shadow
+    ctx.shadowColor   = 'transparent';
+    ctx.shadowBlur    = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    ctx.restore();
+
+    // Hit region in CSS canvas pixels (circular, so use btnR for both axes)
+    var wrap     = document.getElementById('canvas-wrap');
+    var cssScale = wrap.clientWidth / CANVAS_SIZE;
+    eggProjected = {
+      x:  O.x * cssScale,
+      y:  O.y * cssScale,
+      hw: btnR * cssScale,
+      hh: btnR * squish * cssScale
+    };
+  }
+
+  function eggHitTest(clientX, clientY) {
+    if (!eggProjected || interact.zoom < EASTER_THRESHOLD) return false;
+    var wrap = document.getElementById('canvas-wrap');
+    var rect = wrap.getBoundingClientRect();
+    // Map client coords to CSS canvas coords
+    var cx_css = clientX - rect.left;
+    var cy_css = clientY - rect.top;
+    return Math.abs(cx_css - eggProjected.x) < eggProjected.hw &&
+           Math.abs(cy_css - eggProjected.y) < eggProjected.hh;
+  }
+
+  var ZOOM_TARGET = 1.1; // ← default zoom after build
+  var zoomRampStart = null;
+  var ZOOM_RAMP_MS = 600;
+
+  // Hint overlay — fades in after build completes
+  var hint = document.createElement('div');
+  hint.innerHTML = 'zoom to enter &nbsp;&middot;&nbsp; drag to orbit &nbsp;&middot;&nbsp; dbl-click to reset &nbsp;&middot;&nbsp; <a id="hint-info" href="#" style="color:rgba(255,255,255,0.5);text-decoration:underline;text-underline-offset:3px;pointer-events:all;cursor:pointer;">about this animation</a>';
+  hint.style.cssText = [
+    'position:fixed','bottom:28px','left:0','right:0',
+    'text-align:center','color:rgba(255,255,255,0.50)',
+    'font:13px/1.6 system-ui,sans-serif','pointer-events:none',
+    'opacity:0','transition:opacity 0.8s ease','letter-spacing:0.05em',
+    'z-index:200'
+  ].join(';');
+  document.body.appendChild(hint);
+
+  // Wire the inline "About" link in the hint to open the popup
+  hint.addEventListener('click', function(e){
+    if(e.target && e.target.id === 'hint-info'){
+      e.preventDefault();
+      document.getElementById('popup-overlay').classList.add('visible');
+    }
+  });
+
+  function enterInteractMode() {
+    if (interact.frozen) return;
+    interact.rotMat = matIdentity();
+    interact.zoom   = 1.0; // start at 1.0 — ramp eases to ZOOM_TARGET
+    interact.frozen = true;
+    document.getElementById('controls').classList.add('visible');
+    hint.style.opacity = '1';
+  }
+
+  function project(x,y,z,tilt,spin){
+    var zoom = interact.frozen ? interact.zoom : 1.0;
+    if(interact.frozen){
+      var ox=x-CX,oy=y-CY,v=matVec(interact.rotMat,ox,oy,z);
+      var fov=900,sc=fov/(fov+v.z);
+      return{x:CX+v.x*sc*zoom,y:CY+v.y*sc*zoom,scale:sc*zoom};
+    }
+    var ox=x-CX,oy=y-CY;
+    var sx=ox*Math.cos(spin)-oy*Math.sin(spin);
+    var sy=ox*Math.sin(spin)+oy*Math.cos(spin);
+    var ty=sy*Math.cos(tilt)-z*Math.sin(tilt);
+    var tz=sy*Math.sin(tilt)+z*Math.cos(tilt);
+    var sc=900/(900+tz);
+    return{x:CX+sx*sc,y:CY+ty*sc,scale:sc};
+  }
+
+  function applyDelta(dx,dy){
+    var s=0.008;
+    interact.rotMat=matMul(matMul(matRotY(dx*s),matRotX(dy*s)),interact.rotMat);
+  }
+
+  /* =====================================================================
+     CONTROLS
+     ===================================================================== */
+
+  var btnOrbit   = document.getElementById('btn-orbit');
+  var btnZoomIn  = document.getElementById('btn-zoom-in');
+  var btnZoomOut = document.getElementById('btn-zoom-out');
+  var btnRestart = document.getElementById('btn-restart');
+  var btnInfo    = document.getElementById('btn-info');
+
+  btnZoomIn.addEventListener('click', function(){
+    interact.zoom *= 1.25;
+    applyZoom();
+  });
+  btnZoomOut.addEventListener('click', function(){
+    interact.zoom = Math.max(0.25, interact.zoom * 0.8);
+    applyZoom();
+  });
+
+  btnOrbit.addEventListener('click', function(){
+    interact.orbitMode = !interact.orbitMode;
+    btnOrbit.classList.toggle('active', interact.orbitMode);
+    canvas.classList.toggle('orbiting', interact.orbitMode);
+  });
+
+  btnRestart.addEventListener('click', function(){
+    interact.frozen  = false;
+    interact.zoom    = 1.0; // resets to 1.0; ramp will ease to ZOOM_TARGET
+    interact.rotMat  = matIdentity();
+    interact.orbitMode = false;
+    btnOrbit.classList.remove('active');
+    canvas.classList.remove('orbiting');
+    document.getElementById('controls').classList.remove('visible');
+    hint.style.opacity = '0';
+    hint.style.opacity = '0';
+
+    newPalette();
+    comps = newScene();
+    scene = buildScene(comps);
+    startTime = null;
+  });
+
+  /* Info popup */
+  var overlay = document.getElementById('popup-overlay');
+  btnInfo.addEventListener('click', function(){ overlay.classList.add('visible'); });
+  document.getElementById('popup-close').addEventListener('click', function(){ overlay.classList.remove('visible'); });
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.classList.remove('visible'); });
+
+  /* =====================================================================
+     MOUSE EVENTS  (orbit only when orbitMode is on)
+     ===================================================================== */
+
+  canvas.addEventListener('click', function(e){
+    if(!interact.frozen) return;
+    if(eggHitTest(e.clientX, e.clientY)){
+      window.location.href = EASTER_URL;
+    }
+  });
+
+  canvas.addEventListener('mousedown', function(e){
+    if(!interact.frozen) return;
+    interact.active=true;
+    interact.lastX=e.clientX; interact.lastY=e.clientY;
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', function(e){
+    if(interact.active){
+      applyDelta(e.clientX-interact.lastX, e.clientY-interact.lastY);
+      interact.lastX=e.clientX; interact.lastY=e.clientY;
+    }
+    // Show pointer cursor when hovering the egg, grab otherwise
+    if(interact.frozen && eggHitTest(e.clientX, e.clientY)){
+      canvas.style.cursor = 'pointer';
+    } else if(interact.frozen){
+      canvas.style.cursor = interact.active ? 'grabbing' : 'grab';
+    }
+  });
+  window.addEventListener('mouseup', function(){ interact.active=false; });
+
+  /* =====================================================================
+     TOUCH EVENTS
+     ===================================================================== */
+
+  canvas.addEventListener('touchstart', function(e){
+    if(!interact.frozen) return;
+    if(e.touches.length===1){
+      interact.active=true;
+      interact.lastX=e.touches[0].clientX;
+      interact.lastY=e.touches[0].clientY;
+    } else if(e.touches.length===2){
+      interact.active=false;
+      interact.pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    }
+    e.preventDefault();
+  },{passive:false});
+
+  canvas.addEventListener('touchmove', function(e){
+    if(!interact.frozen) return;
+    if(e.touches.length===1 && interact.active){
+      applyDelta(e.touches[0].clientX-interact.lastX, e.touches[0].clientY-interact.lastY);
+      interact.lastX=e.touches[0].clientX; interact.lastY=e.touches[0].clientY;
+    } else if(e.touches.length===2 && interact.pinchDist){
+      var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      interact.zoom*=d/interact.pinchDist;
+      interact.zoom=Math.max(0.25,interact.zoom);
+      interact.pinchDist=d;
+      applyZoom();
+    }
+    e.preventDefault();
+  },{passive:false});
+
+  canvas.addEventListener('touchend', function(e){
+    if(e.touches.length<2) interact.pinchDist=null;
+    if(e.touches.length===0) interact.active=false;
+  });
+
+  /* Scroll to zoom */
+  window.addEventListener('wheel', function(e){
+    if(!interact.frozen) return;
+    interact.zoom*=e.deltaY<0?1.08:0.93;
+    interact.zoom=Math.max(0.25,interact.zoom);
+    applyZoom();
+    e.preventDefault();
+  },{passive:false});
+
+  /* Tap egg or double-tap to reset */
+  var lastTap=0;
+  canvas.addEventListener('touchend', function(e){
+    if(e.touches.length!==0) return;
+    var now=Date.now();
+    var touch=e.changedTouches[0];
+    if(now-lastTap<300){
+      btnRestart.click(); e.preventDefault();
+    } else if(eggHitTest(touch.clientX, touch.clientY)){
+      window.location.href = EASTER_URL;
+    }
+    lastTap=now;
+  });
+  canvas.addEventListener('dblclick', function(){ btnRestart.click(); });
+
+  /* =====================================================================
+     MAIN LOOP
+     ===================================================================== */
+
+  var comps = newScene();
+  var scene = buildScene(comps);
+  var startTime = null;
+
+  function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
+  function loop(now){
+    if(startTime===null) startTime=now;
+    var elapsed=now-startTime;
+    if(interact.frozen){
+      // Smooth zoom ramp from 1.0 to ZOOM_TARGET — runs once after build
+      if(zoomRampStart === -1) zoomRampStart = now;
+      if(zoomRampStart !== null && zoomRampStart !== -1){
+        var rampT = Math.min(1, (now - zoomRampStart) / ZOOM_RAMP_MS);
+        interact.zoom = 1.0 + (ZOOM_TARGET - 1.0) * easeOutCubic(rampT);
+        if(rampT >= 1) zoomRampStart = null; // ramp complete — user zoom takes over
+      }
+
+      ctx.clearRect(0,0,CANVAS_SIZE,CANVAS_SIZE);
+      ctx.lineCap='round'; ctx.lineJoin='round'; ctx.setLineDash([]);
+      for(var i=0;i<comps.length;i++)
+        renderComp(comps[i],scene.timelines[i],scene.BUILD_END,i,0,0);
+      ctx.setLineDash([]);
+      drawEasterEgg(comps, 0, 0);
+    } else {
+      if(elapsed>=scene.BUILD_END){
+        enterInteractMode();
+      } else {
+        renderFrame(scene,comps,elapsed);
+      }
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+})();
+</script>
+</body>
+</html>
