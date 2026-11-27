@@ -1,0 +1,22 @@
+{
+  "category": "video",
+  "published": false,
+  "order": 1,
+  "details": [
+    {
+      "label": "Role",
+      "value": ""
+    },
+    {
+      "label": "Client",
+      "value": ""
+    }
+  ],
+  "bodyHtml": "",
+  "image": null,
+  "video": {
+    "provider": "stream",
+    "id": "f81bb3bda1bf55f69efb831d45a14d73"
+  },
+  "title": "Unless the Lord"
+}
